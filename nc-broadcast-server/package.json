@@ -1,0 +1,20 @@
+{
+  "name": "nc-broadcast-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node --trace-sync-io ./bin/www",
+    "debug": "set DEBUG=nc-broadcast-server:* & npm start"
+  },
+  "dependencies": {
+    "compression": "^1.7.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "jade": "^1.11.0",
+    "jstransformer": "^1.0.0",
+    "morgan": "~1.9.0",
+    "pug": "^2.0.3"
+  }
+}

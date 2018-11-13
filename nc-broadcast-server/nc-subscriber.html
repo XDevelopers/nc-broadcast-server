@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>Subscriber Test - Negocie Coins</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+</head>
+<body style="color: #333333">
+	<div class='col-sm-12' style="background-color:#DD4814; color:#fff">
+		<h1>Subscriber Test - Negocie Coins<h1/>
+	</div>		
+	<div class='col-sm-12 text-center'>		
+		<div class="form-group">
+			<br/>
+			<br/>
+			<label for="message">Host:</label>
+			<input id="host" type="text" placeholder="ws://WebSocket-Host:1337" value="ws://127.0.0.1:1337" style="width: 90%; font-size:15pt;" />
+			<button type="button" class="btn btn-danger" id="connect">Connect</button>	
+			<br/><br/>		
+			Message <kbd>data</kbd> object printed in browser <kbd>console</kbd>
+		</div>
+		<hr/>
+	</div>			
+	<div class='col-sm-12'>		
+		<div class="form-group">
+			<label for="message">Total messages:</label>
+			<b><span id='totalmsg'></span></b>
+		</div>					
+		<ul id="list" style="list-style-type: none; padding-right: 20px;">
+			<li></li>
+		</ul>
+	</div>
+</body>
+
+<script type="text/javascript">
+	var connection = null;
+	
+	$(function(){
+			
+		$("#connect").click(function(e){
+			$('#list').empty();
+			$('#list').append('<li>connecting...</li>')
+			var endpoint = $('#host').prop('value');
+			
+			if(connection != null){
+				connection.close();				
+			}
+			
+			connection = new WebSocket(endpoint);			
+			
+			connection.onopen = function (ev) {				
+				$('#list').append('<li><i class="fa fa-check"></i> connection opened</li>')
+			}
+		
+			connection.onclose = function (ev) {				
+				$('#list').empty();
+				$('#list').append('<li><i class="fa fa-times"></i> connection dropped</li>')
+			}
+		
+			connection.onmessage = function (ev) {
+				var json = JSON.parse(ev.data);
+				if (json.type === "message"){					
+					var message = '<li class=msg><i class="fa fa-commenting-o"></i> message received - Time [ <b>';
+						message += formatDate(new Date(json.data.time));
+						message += '</b> ], channel [ <b>';
+						message += json.data.author;
+						message += '</b> ] message [ <b>'+ json.data.text +'</b> ] </li>';
+					
+					$('#list').append(message);
+					
+					console.log(json);
+
+					var total = $('#list li.msg').length;
+					$('#totalmsg').text(total);
+				}
+				else{
+					console.log(json);
+				}
+			}
+		});
+
+		function padLeft(nr, n, str){
+			return Array(n-String(nr).length+1).join(str||'0')+nr;
+		}
+		function formatDate(dateIn) {
+			var yyyy = dateIn.getFullYear();
+			var mm = dateIn.getMonth()+1; // getMonth() is zero-based
+			var dd  = dateIn.getDate();
+
+
+			return String(padLeft(dd, 2) + "/" + padLeft(mm, 2) + "/" + yyyy); // Leading zeros for mm and dd
+		}
+	});
+	
+</script>
+
+</html>
